@@ -71,7 +71,9 @@ class ContentModule extends ModuleComponent
 
     public function __construct(array $options = [])
     {
+        Application::setAlias('@modules/content', __DIR__);
         parent::__construct($options);
+       
         // Формирование мегю
         $this->_generalMenu[] = $this->contextMenu();
         // Подгрузка всех модулей
