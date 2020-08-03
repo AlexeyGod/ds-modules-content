@@ -74,9 +74,10 @@ class ContentModule extends ModuleComponent
         Application::setAlias('@modules/content', __DIR__);
         parent::__construct($options);
        
-        // Формирование мегю
+        // Формирование меню
         $this->_generalMenu[] = $this->contextMenu();
-        // Подгрузка всех модулей
+        /* deprecated
+         Подгрузка всех модулей
         if(!empty($this->modules))
         {
             foreach($this->modules as $module)
@@ -89,6 +90,7 @@ class ContentModule extends ModuleComponent
                 unset($object);
             }
         }
+        */
     }
 
 
