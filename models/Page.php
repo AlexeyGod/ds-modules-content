@@ -24,6 +24,12 @@ class Page extends ActiveRecord
         'block' => 'Текстовый блок',
     ];
 
+
+    public static function tableName()
+    {
+        return 'content_pages';
+    }
+
     public function __construct(array $options = [])
     {
         $this->_userClass = get_class(Application::app()->identy);
@@ -118,10 +124,14 @@ class Page extends ActiveRecord
     public function getSectionLink()
     {
         if(is_object($this->getSection()))
-            return strtolower($this->getSection()->link);
+        {
+            $link = trim($this->getSection()->link);
+            return ($link == '' ? '/' : strtolower($link));
+        }
         else
-            return '';
+            return '/';
     }
+
 
     public function getLogoObject()
     {

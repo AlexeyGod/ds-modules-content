@@ -56,7 +56,10 @@ class ManagerSectionsController extends Controller
         if($model->load(Application::app()->request->post()))
         {
             if($model->save())
+            {
                 Application::app()->request->setFlash('success', 'Раздел добавлен');
+                $this->redirect('/manager/content/manager-sections');
+            }
         }
 
         $sections = array_merge([0 => 'Не вкладывать'], ArrayHelper::map(Section::find()->all(), 'id', 'name'));

@@ -8,6 +8,7 @@
 namespace modules\content\controllers;
 
 use framework\exceptions\ErrorException;
+use framework\helpers\ArrayHelper;
 use modules\content\models\Menu;
 use framework\components\Controller;
 use framework\components\Model;
@@ -34,7 +35,10 @@ class ManagerMenuController extends Controller
             return $this->redirect('/content/manager-menu/');
         }
 
-        return $this->render('update', ['model' => $model]);
+        return $this->render('update', [
+            'model' => $model,
+            'items' => ArrayHelper::map(Menu::findAll(), 'id', 'name')
+        ]);
     }
 
     public function actionUpdate($id)
@@ -50,7 +54,10 @@ class ManagerMenuController extends Controller
             Application::app()->request->setFlash('success', 'Пункт меню изменен');
         }
 
-        return $this->render('update', ['model' => $model]);
+        return $this->render('update', [
+            'model' => $model,
+            'items' => ArrayHelper::map(Menu::findAll(), 'id', 'name')
+        ]);
     }
 
     public function actionDelete($id)

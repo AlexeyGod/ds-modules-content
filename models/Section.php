@@ -16,6 +16,11 @@ class Section extends ActiveRecord
 {
     protected $_editLink = '/manager/content/manager-sections/update/';
 
+    public static function tableName()
+    {
+        return 'content_section';
+    }
+
     public function isParent()
     {
         if ($this->id_parent != 0)

@@ -13,7 +13,8 @@ $this->title = 'Меню';
 $this->breadcrumbs[] = ['name' => 'Управление меню'];
 
 ?>
-<h1>Список пунктов меню <a class="button" href="/content/manager-menu/create"><span class="">+</span></a></h1>
+<h1>Список пунктов меню <a class="pull-right btn btn-success" href="/content/manager-menu/create">+</a></h1>
+<hr>
 
 <?=GridView::widget($models, [
     'draggable' => true,

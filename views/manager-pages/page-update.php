@@ -8,99 +8,93 @@ $this->title = ($model->isNewRecord ? 'Создать' : 'Изменить').' �
 
 /*<h1><?=($model->isNewRecord ? 'Создать' : 'Редактировать: '.$model->name)?></h1>*/
 ?>
-<div style="padding: 10px;">
-    <?php
-    // Старт форм
-    $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]);
-    ?>
-    <!-- Вкладки -->
 
-    <div class="tabs">
-        <input id="tab_1" type="radio" name="tabs"<?=(($editType == 'edit') ? ' checked' : '')?>>
-        <label for="tab_1"><span class="icon icon-profile"></span> <span class="text">Карточка</span></label>
+<?php
+// Старт форм
+$form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]);
+?>
+<!-- Вкладки -->
+<ul class="nav nav-tabs">
+    <li>
+        <a data-toggle="tab" href="#card"><span class="icon icon-profile"></span> Карточка</a>
+    </li>
+    <li class="active">
+        <a data-toggle="tab" href="#content"><span class="icon icon-file-text2"></span></span> Контент</a>
+    </li>
+    <li>
+      <a target="_blank" href="<?=$model->link?>"><span class="icon icon-eye"></span> Открыть страницу</a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div id="card" class="tab-pane">
+        <?
+        // Загрузка превью
+        echo $form->field($model->logoObject, 'file', ['theme' => 'white']);
+        // +++ use $model->logo
 
-        <input id="tab_2" type="radio" name="tabs" <?=(($editType == 'text' OR empty($editType)) ? ' checked' : '')?>>
-        <label for="tab_2"><span class="icon icon-file-text2"></span>  <span class="text">Текст</span></label>
-        <label><span class="icon icon-eye"></span>  <a class="color-grey" target="_blank" href="<?=$model->link?>">Открыть страницу</a></span></label>
+        foreach($model->fields as $field)
+        {
+            if(in_array($field, ['id', 'password', 'last_visit', 'created_at',  'content', 'short'])) continue;
 
-        <section id="tab_content_1">
+            switch($field):
 
-            <div class="field">
-                <div class="image" style="height: 100px;">
-                    <img src="<?=$model->logo?>" alt="Logotype" style="max-height: 100%">
-                </div>
-            </div>
+                case 'link':
 
-            <?
-            // Загрузка превью
-            echo '<div class="field">'.$form->inputFile($model->logoObject, 'file', ['theme' => 'white']).'</div>';
+                    echo $form->field($model, $field);
+                    break;
 
-            foreach($model->fields as $field)
-            {
-                if(in_array($field, ['id', 'password', 'last_visit', 'created_at',  'content', 'short'])) continue;
-
-                switch($field):
-
-                    case 'link':
-
-                        echo '<div class="field">'.$form->input($model, $field).'</div>';
-                        $address = $model->generateLink();
-                        if(!$model->isNewRecord AND $model->link != $address)
-                        {
-                            echo '<div class="field"><b class="color-red">Адрес страницы не совпадает с сформсированным: '.$address.'</b> </div>';
-                        }
-                        break;
-
-                    case 'public':
-                        echo '<div class="field">'.$form->checkbox($model, $field).'</div>';
-                        break;
-                    /*
-                    case 'short':
-                        echo '<div class="field">'.$form->textarea($model, $field).'</div>';
-                        break;
+                case 'public':
+                    echo $form->field($model, $field)->checkbox();
+                    break;
+                /*
+                case 'short':
+                    echo '<div class="field">'.$form->textarea($model, $field).'</div>';
+                    break;
 
 
-                    case 'content':
-                        echo '<div class="field">'.$form->widget('framework\\widgets\\redactor\\RedactorWidget', $model, 'content').'</div>';
-                        break;
-                    */
-                    case 'id_section':
-                        echo '<div class="field">'.$form->select($model, 'id_section', $sections).'</div>';
-                        break;
+                case 'content':
+                    echo '<div class="field">'.$form->widget('framework\\widgets\\redactor\\RedactorWidget', $model, 'content').'</div>';
+                    break;
+                */
+                case 'id_section':
+                    echo $form->field($model, 'id_section')->select($sections);
+                    break;
 
-                    case 'type':
-                        echo '<div class="field">'.$form->select($model, $field, $model->types).'</div>';
-                        break;
+                case 'type':
+                    echo $form->field($model, $field)->select($model->types);
+                    break;
 
 
-                    case 'author':
-                        continue;
-                        //    if(!$model->isNewRecord)
-                        //        echo '<div class="field">'.$form->readonlyInput($model, 'authorName').'</div>';
-                        break;
+                case 'author':
+                    continue;
+                    //    if(!$model->isNewRecord)
+                    //        echo '<div class="field">'.$form->readonlyInput($model, 'authorName').'</div>';
+                    break;
 
-                    default:
-                        echo '<div class="field">'.$form->input($model, $field).'</div>';
-                        break;
+                case 'priority':
+                    echo $form->field($model, $field)->number();
+                    break;
 
-                endswitch;
-            }
+                default:
+                    echo $form->field($model, $field);
+                    break;
 
-            ?>
-        </section>
-        <section id="tab_content_2">
-            <?php
+            endswitch;
+        }
 
-                echo '<div class="field">'.$form->widget('framework\\widgets\\redactor\\RedactorWidget', $model, 'short').'</div>';
-                echo '<div class="field">'.$form->widget('framework\\widgets\\redactor\\RedactorWidget', $model, 'content').'</div>';
-
-            ?>
-        </section>
+        ?>
     </div>
-    <?php
-        echo '<div class="field">';
-        ActiveForm::submit(['class' => 'btn btn-success', 'value' => 'Сохранить']);
-        echo '</div>';
-        ActiveForm::end();
-    ?>
+    <div id="content" class="tab-pane  active">
+        <?php
+            echo $form->field($model, 'short')->widget('framework\\widgets\\redactor\\RedactorWidget');
+            //echo $form->field($model, 'content')->widget('framework\\widgets\\ckeditor\\CkeditorWidget');
+        ?>
+    </div>
 </div>
+
+<?php
+
+    echo ActiveForm::submit(['class' => 'btn btn-success', 'value' => 'Сохранить']);
+
+    ActiveForm::end();
+?>

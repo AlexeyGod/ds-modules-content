@@ -85,7 +85,7 @@ class ManagerPagesController extends Controller
                 $model->logoObject->upload();
                 $model->logoObject->save();
 
-                return $this->redirect('/content/manager-pages/update/id/'.$model->getIdentity());
+                return $this->redirect('/manager/content/manager-pages/update/'.$model->getIdentity());
             }
             else
             {

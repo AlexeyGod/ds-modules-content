@@ -9,13 +9,15 @@ namespace modules\content;
 
 
 use framework\components\module\ModuleComponent;
+use framework\components\module\ModuleInstall;
 use framework\core\Application;
 use framework\exceptions\ErrorException;
+use modules\content\migrations\m_install_content_0;
 
 class ContentModule extends ModuleComponent
 {
     public $normalize = true;
-    public $modules = ['user'];
+    //deprecated: public $modules = ['user'];
 
     public  $routes = [
         // Пользовательские
@@ -26,6 +28,7 @@ class ContentModule extends ModuleComponent
             'url' => 'content/page/view-section'
 
         ],
+
         // Страницы
         [
             'class' => __NAMESPACE__.'\route\UrlRule',
@@ -33,10 +36,12 @@ class ContentModule extends ModuleComponent
             'url' => 'content/page/view'
 
         ],
+
         // Меню
         'manager/content/menu' => 'content/manager-menu',
         'manager/content/menu/create' => 'content/manager-menu/create',
         'manager/content/menu/<action:view|update|delete>/<id:\d+>' => 'content/manager-menu/<action>',
+
         // Разделы
         'manager/content/sections' => 'content/manager-sections',
         'manager/content/sections/create' => 'content/manager-sections/create',
@@ -67,7 +72,7 @@ class ContentModule extends ModuleComponent
         ]
     ];
 
-    protected $_generalMenu = [];
+    //protected $_generalMenu = [];
 
     public function __construct(array $options = [])
     {
@@ -75,60 +80,19 @@ class ContentModule extends ModuleComponent
         parent::__construct($options);
        
         // Формирование меню
-        $this->_generalMenu[] = $this->contextMenu();
-        /* deprecated
-         Подгрузка всех модулей
-        if(!empty($this->modules))
-        {
-            foreach($this->modules as $module)
-            {
-                $object = Application::app()->getModule($module);
-                if(!method_exists($object, 'contextMenu'))
-                    throw new ErrorException("ManagerModule: Указанный как плагин модуль $module не содержит необходимого метода contextMenu()");
-
-                $this->_generalMenu[] = $object->contextMenu();
-                unset($object);
-            }
-        }
-        */
+        //$this->_generalMenu[] = $this->contextMenu();
     }
 
-
-    public function stringNormalize($str)
+    public static function install()
     {
-        if($this->normalize)
-            $str = htmlspecialchars(stripslashes($str));
+        $migration = new m_install_content_0();
 
-        return $str;
+        $data = $migration->up();
+
+        return [
+            'status' => ModuleInstall::INSTALL_SUCCESS,
+            'msg' => $data
+        ];
     }
 
-    public function mailer()
-    {
-        return 'test';
-    }
-
-    public function menu()
-    {
-        $output = "<!-- Module Menu widget -->\n";
-
-        foreach($this->_generalMenu as $item)
-        {
-            $output .= '<div class="module-menu">'."\n";
-            $output .= "\t".'<div class="module-name">'."\n"
-                .'<a href="#"><span class="'.$item['icon'].'"> '.$this->stringNormalize($item['name']).'</a>'."\n"
-                .'</div>'."\n";
-                $output .= "\t".'<div class="module-menu">'."\n\t\t<ul>\n";
-
-                foreach($item['links'] as $link)
-                {
-                    $output .= "\t\t\t".'<li><a href="'.$link['url'].'">'.$this->stringNormalize($link['name']).'</a></li>'."\n";
-                }
-
-                $output .= "\t\t</ul>\n\t".'</div>'."\n";
-            $output .= '</div>';
-            $output .= "\n<!--/ Module Menu widget -->\n";
-        }
-
-        return $output;
-    }
 }

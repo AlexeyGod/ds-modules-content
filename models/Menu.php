@@ -13,6 +13,11 @@ use framework\core\Application;
 
 class Menu extends ActiveRecord
 {
+    public static function tableName()
+    {
+        return 'content_menu';
+    }
+
     public function attributeLabels()
     {
         return array_merge([
